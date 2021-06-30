@@ -1,20 +1,14 @@
 package com.example.workshopmongo.resources;
 
 import com.example.workshopmongo.domain.Post;
-import com.example.workshopmongo.domain.User;
-import com.example.workshopmongo.dto.UserDTO;
 import com.example.workshopmongo.resources.utils.URLDecode;
 import com.example.workshopmongo.services.PostService;
-import com.example.workshopmongo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.websocket.server.PathParam;
-import java.net.URI;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/post")
@@ -35,6 +29,22 @@ public class PostResource {
         List<Post> post = service.findByTitle(text);
         return ResponseEntity.ok(post);
     }
+
+
+        @GetMapping(value = "/all-search")
+    public ResponseEntity<List<Post>> allSearch(@RequestParam(value = "text", defaultValue = "") String text,
+                                                @RequestParam(value = "minDate", defaultValue = "") String minDate,
+                                                @RequestParam(value = "maxDate", defaultValue = "") String maxDate){
+
+        text = URLDecode.decodeParam(text);
+        Date min = URLDecode.convertDate(minDate, new Date(0L));
+        Date max = URLDecode.convertDate(maxDate, new Date(0L));
+
+        List<Post> post = service.findAllAndBetweenDates(text,min,max);
+        return ResponseEntity.ok(post);
+    }
+
+
 
 
 
